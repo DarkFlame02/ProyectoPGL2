@@ -136,16 +136,6 @@ class GrabadoraActivity : AppCompatActivity() {
         }
     }
 
-    // Método que se ejecuta cuando se responde la solicitud de permisos
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-            if (grantResults.any { it != PackageManager.PERMISSION_GRANTED }) {
-                Toast.makeText(this, "Permiso denegado, no se puede grabar audio.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     // Método que se ejecuta cuando la actividad se detiene o sale de la pantalla
     override fun onStop() {
         super.onStop()
