@@ -12,20 +12,75 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+            <!-- AppBarLayout con Toolbar -->
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="#03A9F4"
-                android:elevation="4dp"
-                app:title="Grabadora"
-                app:titleTextColor="@color/black" />
-        </com.google.android.material.appbar.AppBarLayout>
+                android:layout_height="wrap_content">
 
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:elevation="4dp"
+                    app:title="Grabadora"
+                    app:titleTextColor="@color/black" />
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <!-- Contenido Principal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp">
+
+                <!-- Botón de Grabar/Pausar -->
+                <Button
+                    android:id="@+id/btnRecord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/rec_txt"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- SeekBar para el Volumen -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Volumen"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp" />
+
+                <SeekBar
+                    android:id="@+id/seekBarVolume"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="200"
+                    android:progress="100"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- SeekBar para la Frecuencia (Velocidad de Reproducción) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Velocidad de Reproducción"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp" />
+
+                <SeekBar
+                    android:id="@+id/seekBarSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="200"
+                    android:progress="100" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- NavigationView para el Menú Lateral -->
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
@@ -37,27 +92,15 @@
 
     </androidx.drawerlayout.widget.DrawerLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <Button
-            android:id="@+id/btnRecord"
-            android:backgroundTint="#03A9F4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rec_txt" />
-
-        <Button
-            android:id="@+id/btnPlay"
-            android:backgroundTint="#03A9F4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/play_txt"
-            android:layout_marginTop="16dp" />
-
-    </LinearLayout>
+    <!-- FloatingActionButton para Reproducir -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnPlay"
+        android:contentDescription="@string/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:srcCompat="@android:drawable/ic_media_play" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

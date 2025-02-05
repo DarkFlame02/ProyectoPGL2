@@ -2,9 +2,11 @@ package com.example.proyectopgl2.activity
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,7 +32,10 @@ class GrabadoraActivity : AppCompatActivity() {
 
     // Constantes para el código de solicitud de permisos y los permisos requeridos
     private val REQUEST_RECORD_AUDIO_PERMISSION = 200
-    private val permissionsRequired = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private val permissionsRequired = arrayOf(
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +75,24 @@ class GrabadoraActivity : AppCompatActivity() {
                 Toast.makeText(this, "No hay archivo de audio grabado.", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // Configuramos el SeekBar para el volumen
+        binding.seekBarVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                setVolume(progress)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        // Configuramos el SeekBar para la velocidad de reproducción
+        binding.seekBarSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                setPlaybackSpeed(progress / 100f)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
 
     // Método para verificar si se tienen los permisos requeridos
@@ -134,6 +157,21 @@ class GrabadoraActivity : AppCompatActivity() {
                 Toast.makeText(this@GrabadoraActivity, "Error al reproducir audio.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    // Método para ajustar el volumen del audio
+    private fun setVolume(volume: Int) {
+        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        val newVolume = (maxVolume * (volume / 100f)).toInt()
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
+    }
+
+    // Método para ajustar la velocidad de reproducción del audio
+    private fun setPlaybackSpeed(speed: Float) {
+        mediaPlayer?.playbackParams = mediaPlayer?.playbackParams?.apply {
+            this.speed = speed
+        }!!
     }
 
     // Método que se ejecuta cuando la actividad se detiene o sale de la pantalla
