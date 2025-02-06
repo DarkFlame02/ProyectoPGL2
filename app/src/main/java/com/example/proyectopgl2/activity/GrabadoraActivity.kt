@@ -1,19 +1,28 @@
 package com.example.proyectopgl2.activity
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.proyectopgl2.R
 import com.example.proyectopgl2.databinding.ActivityGrabadoraBinding
 import java.io.IOException
+import kotlin.system.exitProcess
 
 class GrabadoraActivity : AppCompatActivity() {
 
@@ -26,6 +35,7 @@ class GrabadoraActivity : AppCompatActivity() {
 
     // Bandera para saber si estamos grabando
     private var isRecording = false
+    private var playing = false
 
     // Nombre y ubicación del archivo donde se guardará la grabación
     private var fileName: String? = null
@@ -39,10 +49,33 @@ class GrabadoraActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Inflamos la vista usando ViewBinding
         binding = ActivityGrabadoraBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener { finish() }
+
+        binding.navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_info -> {
+                    mostrarInformacionApp()
+                }
+                R.id.nav_logout -> {
+                    logout()
+                }
+                R.id.nav_exit -> {
+                    mostrarConfirmacionSalida()
+                }
+            }
+            true
+        }
 
         // Establecemos la ruta y el nombre del archivo donde se grabará el audio
         fileName = "${externalCacheDir?.absolutePath}/grabacion.3gp"
@@ -67,12 +100,12 @@ class GrabadoraActivity : AppCompatActivity() {
 
         // Configuramos el botón de reproducir
         binding.btnPlay.setOnClickListener {
-            if (fileName != null) {
+            if (fileName != null && !playing) {
                 // Si existe un archivo grabado, lo reproducimos
                 startPlaying()
             } else {
+                stopPlaying()
                 // Si no hay archivo grabado, mostramos un mensaje de error
-                Toast.makeText(this, "No hay archivo de audio grabado.", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -93,6 +126,25 @@ class GrabadoraActivity : AppCompatActivity() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.option_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.grabadora -> {
+                Toast.makeText(this, "Usted se encuentra en grabadora.", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.sensores -> {
+                startActivity(Intent(this, SensoresActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     // Método para verificar si se tienen los permisos requeridos
@@ -119,9 +171,6 @@ class GrabadoraActivity : AppCompatActivity() {
         } catch (e: IOException) {
             e.printStackTrace()
             Toast.makeText(this, "Error al grabar audio: ${e.message}", Toast.LENGTH_SHORT).show()
-        } catch (e: IllegalStateException) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error de estado al grabar audio: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -149,6 +198,14 @@ class GrabadoraActivity : AppCompatActivity() {
                 prepare()
                 // Comenzamos a reproducir el audio
                 start()
+                playing = true // Marcamos como reproduciendo
+                binding.btnPlay.setImageResource(android.R.drawable.ic_media_pause)
+                setOnCompletionListener {
+                    // Al finalizar la reproducción, cambiamos el icono a play
+                    playing = false
+                    binding.btnPlay.setImageResource(android.R.drawable.ic_media_play)
+                    Toast.makeText(this@GrabadoraActivity, "Reproducción terminada", Toast.LENGTH_SHORT).show()
+                }
                 // Mostramos un mensaje indicando que el audio está reproduciéndose
                 Toast.makeText(this@GrabadoraActivity, "Reproduciendo audio...", Toast.LENGTH_SHORT).show()
             } catch (e: IOException) {
@@ -157,6 +214,17 @@ class GrabadoraActivity : AppCompatActivity() {
                 Toast.makeText(this@GrabadoraActivity, "Error al reproducir audio.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun stopPlaying() {
+        mediaPlayer?.apply {
+            stop()
+            release()
+        }
+        mediaPlayer = null
+        playing = false // Marcamos como no reproduciendo
+        binding.btnPlay.setImageResource(android.R.drawable.ic_media_play)
+        Toast.makeText(this@GrabadoraActivity, "Reproducción detenida", Toast.LENGTH_SHORT).show()
     }
 
     // Método para ajustar el volumen del audio
@@ -169,9 +237,15 @@ class GrabadoraActivity : AppCompatActivity() {
 
     // Método para ajustar la velocidad de reproducción del audio
     private fun setPlaybackSpeed(speed: Float) {
-        mediaPlayer?.playbackParams = mediaPlayer?.playbackParams?.apply {
-            this.speed = speed
-        }!!
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mediaPlayer?.let {
+                if (it.isPlaying) {
+                    it.playbackParams = it.playbackParams.setSpeed(speed)
+                }
+            }
+        } else {
+            Toast.makeText(this, "Cambio de velocidad no soportado en esta versión de Android.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Método que se ejecuta cuando la actividad se detiene o sale de la pantalla
@@ -181,4 +255,47 @@ class GrabadoraActivity : AppCompatActivity() {
         mediaRecorder?.release()
         mediaPlayer?.release()
     }
+
+    // Muestra el cuadro de dialogo con informacion de la aplicacion
+    private fun mostrarInformacionApp() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.informacion))
+        builder.setMessage(getString(R.string.descripcion_app))
+        builder.setPositiveButton(getString(R.string.cerrar)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
+    }
+
+    // Cierra la sesion del usuario
+    private fun logout() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.cerrar_sesion))
+        builder.setMessage(getString(R.string.estas_seguro_que_deseas_cerrar_sesion))
+        builder.setPositiveButton(getString(R.string.si)) { dialog, _ ->
+            startActivity(Intent(this, LoginActivity::class.java))
+            Toast.makeText(this, getString(R.string.sesion_cerrada), Toast.LENGTH_SHORT).show()
+            finish()
+        }
+        builder.setNegativeButton(getString(R.string.no)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
+    }
+
+    // Muestra el cuadro de dialogo para confirmar la salida de la aplicacion
+    private fun mostrarConfirmacionSalida() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.confirmar_salida))
+        builder.setMessage(getString(R.string.estas_seguro_que_deseas_salir))
+        builder.setPositiveButton(getString(R.string.si)) { dialog, _ ->
+            finishAffinity()
+            exitProcess(0)
+        }
+        builder.setNegativeButton(getString(R.string.no)) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
+    }
+
 }

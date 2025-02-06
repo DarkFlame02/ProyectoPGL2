@@ -19,7 +19,6 @@ import com.example.proyectopgl2.databinding.ActivityMainBinding
 import com.example.proyectopgl2.dialogs.ProductoDialog
 import com.example.proyectopgl2.models.ProductosRecycler
 import com.example.proyectopgl2.room.DatabaseProvider
-import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
@@ -30,7 +29,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var adaptadorReciclador: RecyclerView.Adapter<*>
     private lateinit var layManagerReciclador: RecyclerView.LayoutManager
-    private lateinit var navigationView: NavigationView
 
     companion object {
         var datos: MutableList<ProductosRecycler> = mutableListOf()
@@ -74,8 +72,7 @@ class MainActivity : AppCompatActivity() {
             dialogo.show(supportFragmentManager, "ProductoDialog")
         }
 
-        navigationView = findViewById(R.id.navigation_view)
-        navigationView.setNavigationItemSelectedListener { menuItem ->
+        binding.navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_info -> {
                     mostrarInformacionApp()
@@ -116,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.sensores -> {
-                logout()
+                startActivity(Intent(this, SensoresActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)

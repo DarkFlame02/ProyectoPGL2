@@ -1,0 +1,46 @@
+package com.example.proyectopgl2.fragments
+
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.os.Bundle
+import android.view.View
+import androidx.fragment.app.Fragment
+import com.example.proyectopgl2.R
+import com.example.proyectopgl2.databinding.FragmentLuzAmbientalBinding
+
+class LuzAmbientalFragment : Fragment(R.layout.fragment_luz_ambiental) {
+    private var _binding: FragmentLuzAmbientalBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentLuzAmbientalBinding.bind(view)
+
+        val sensorManager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+
+        sensorManager.registerListener(object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent?) {
+                event?.let {
+                    val luz = it.values[0]
+                    val status = when {
+                        luz < 100 -> "Oscuro"
+                        luz in 100.0..2000.0 -> "Normal"
+                        else -> "Brillante"
+                    }
+                    binding.tvLuz.text = "Luz: $status ($luz lx)"
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }, lightSensor, SensorManager.SENSOR_DELAY_UI)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
