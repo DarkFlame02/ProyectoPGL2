@@ -38,9 +38,7 @@ class UbicacionFragment : Fragment(R.layout.fragment_ubicacion) {
             location?.let {
                 val lat = it.latitude
                 val lon = it.longitude
-                val alt = it.altitude
-                val bearing = it.bearing
-                binding.tvUbicacion.text = "Lat: $lat, Lon: $lon, Alt: $alt, Bearing: $bearing"
+                binding.tvUbicacion.text = "Lat: $lat, Lon: $lon"
             }
         }
     }
