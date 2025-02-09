@@ -24,17 +24,13 @@ import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
-
     private lateinit var adaptadorReciclador: RecyclerView.Adapter<*>
     private lateinit var layManagerReciclador: RecyclerView.LayoutManager
 
     companion object {
         var datos: MutableList<ProductosRecycler> = mutableListOf()
     }
-
-    lateinit var itemLista: ProductosRecycler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +115,6 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
     // Muestra el cuadro de dialogo con informacion de la aplicacion
     private fun mostrarInformacionApp() {
         val builder = AlertDialog.Builder(this)
@@ -130,7 +125,6 @@ class MainActivity : AppCompatActivity() {
         }
         builder.create().show()
     }
-
     // Cierra la sesion del usuario
     private fun logout() {
         val builder = AlertDialog.Builder(this)
@@ -146,7 +140,6 @@ class MainActivity : AppCompatActivity() {
         }
         builder.create().show()
     }
-
     // Muestra el cuadro de dialogo para confirmar la salida de la aplicacion
     private fun mostrarConfirmacionSalida() {
         val builder = AlertDialog.Builder(this)

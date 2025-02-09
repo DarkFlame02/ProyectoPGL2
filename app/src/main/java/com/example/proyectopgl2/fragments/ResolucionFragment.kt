@@ -17,13 +17,17 @@ class ResolucionFragment : Fragment(R.layout.fragment_resolucion) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentResolucionBinding.bind(view)
 
+        // Crea un objeto DisplayMetrics para obtener las métricas de la pantalla
         val displayMetrics = DisplayMetrics()
 
+        // Obtiene el servicio de DisplayManager y el display predeterminado
         val display = requireContext().getSystemService(DisplayManager::class.java)
             ?.getDisplay(Display.DEFAULT_DISPLAY)
 
+        // Obtiene las métricas del display y las almacena en displayMetrics
         display?.getMetrics(displayMetrics)
 
+        // Obtiene el ancho y alto de la pantalla en píxeles
         val width = displayMetrics.widthPixels
         val height = displayMetrics.heightPixels
 

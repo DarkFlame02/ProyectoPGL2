@@ -19,23 +19,28 @@ class UbicacionFragment : Fragment(R.layout.fragment_ubicacion) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentUbicacionBinding.bind(view)
-
+        // Verifica si los permisos de ubicación están concedidos
         if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
             ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Solicita los permisos de ubicación si no están concedidos
             ActivityCompat.requestPermissions(requireActivity(),
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE)
         } else {
+            // Si los permisos ya están concedidos, obtiene la ubicación
             getLocation()
         }
     }
 
     private fun getLocation() {
         val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        // Verifica nuevamente los permisos antes de acceder a la ubicación
         if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Obtiene la última ubicación conocida del proveedor de red
             val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
             location?.let {
+                // Actualiza la interfaz de usuario con los datos de ubicación
                 val lat = it.latitude
                 val lon = it.longitude
                 binding.tvUbicacion.text = "Lat: $lat, Lon: $lon"
@@ -47,13 +52,14 @@ class UbicacionFragment : Fragment(R.layout.fragment_ubicacion) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                // Si los permisos son concedidos, obtiene la ubicación
                 getLocation()
             } else {
+                // Si los permisos son denegados, actualiza la interfaz de usuario en consecuencia
                 binding.tvUbicacion.text = "Location permissions are not granted"
             }
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

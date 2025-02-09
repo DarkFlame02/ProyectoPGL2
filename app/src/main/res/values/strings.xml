@@ -20,7 +20,7 @@
     <string name="si">Si</string>
     <string name="no">No</string>
     <string name="informacion">Información de la aplicación</string>
-    <string name="descripcion_app">Esta aplicacion fue desarrollada por Ismael Medina Waló para realizar reservas de forma sencilla y eficiente. Versión 1.0.0.</string>
+    <string name="descripcion_app">Esta aplicacion fue desarrollada por Ismael Medina Waló con una lista de productos, grabadora y sensores. Versión 1.0.0.</string>
     <string name="cerrar">Cerrar</string>
     <string name="eliminar">Eliminar</string>
     <string name="nombre_apellidos_invalidos">El nombre y los apellidos deben tener al menos 2 caracteres.</string>

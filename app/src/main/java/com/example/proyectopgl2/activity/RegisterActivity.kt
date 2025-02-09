@@ -13,10 +13,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class RegisterActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,9 +25,7 @@ class RegisterActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         auth = Firebase.auth
-
         binding.registerButton.setOnClickListener {
             val email = binding.registerEmail.text.toString()
             val password = binding.registerPassword.text.toString()
@@ -39,13 +35,11 @@ class RegisterActivity : AppCompatActivity() {
                 register(email, password)
             }
         }
-
         binding.registerGoLoginButton.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }
-
     private fun register(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
@@ -57,7 +51,6 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
     }
-
     private fun checkEmpty(email: String, password: String, repeatPassword: String): Boolean {
         return email.isNotEmpty() && password.isNotEmpty() && repeatPassword.isNotEmpty()
     }

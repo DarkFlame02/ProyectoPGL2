@@ -40,35 +40,28 @@ class FuenteAlimentacionFragment : Fragment(R.layout.fragment_fuente_alimentacio
                     addAction(Intent.ACTION_POWER_CONNECTED)
                     addAction(Intent.ACTION_POWER_DISCONNECTED)
                 }
-                // Registramos el receptor solo si no está registrado
-                requireContext().registerReceiver(receiver, intentFilter)
+                requireContext().registerReceiver(receiver, intentFilter)// Registramos el receptor solo si no está registrado
                 isReceiverRegistered = true
                 binding.btnActivarReceiver.text = "Desactivar monitorización"
             } else {
-                // Desregistramos el receptor solo si está registrado
                 try {
                     requireContext().unregisterReceiver(receiver)
                     isReceiverRegistered = false
                     binding.btnActivarReceiver.text = "Activar monitorización"
                 } catch (e: IllegalArgumentException) {
-                    // En caso de que el receptor no estuviera registrado, no hacemos nada
                     e.printStackTrace()
                 }
             }
         }
     }
-
     // En el ciclo de vida del fragmento, desregistramos el receptor si está registrado
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
-        // Desregistramos el receptor solo si está registrado
         if (isReceiverRegistered) {
             try {
                 context?.unregisterReceiver(receiver)
             } catch (e: IllegalArgumentException) {
-                // Si el receptor no estaba registrado, no hacemos nada
                 e.printStackTrace()
             }
         }

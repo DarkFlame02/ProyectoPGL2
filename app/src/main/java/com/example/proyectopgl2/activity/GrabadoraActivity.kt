@@ -25,28 +25,22 @@ import java.io.IOException
 import kotlin.system.exitProcess
 
 class GrabadoraActivity : AppCompatActivity() {
-
     // ViewBinding para acceder a los elementos de la interfaz de usuario
     private lateinit var binding: ActivityGrabadoraBinding
-
     // Instancias de MediaRecorder y MediaPlayer para grabar y reproducir audio
     private var mediaRecorder: MediaRecorder? = null
     private var mediaPlayer: MediaPlayer? = null
-
     // Bandera para saber si estamos grabando
     private var isRecording = false
     private var playing = false
-
     // Nombre y ubicación del archivo donde se guardará la grabación
     private var fileName: String? = null
-
     // Constantes para el código de solicitud de permisos y los permisos requeridos
     private val REQUEST_RECORD_AUDIO_PERMISSION = 200
     private val permissionsRequired = arrayOf(
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGrabadoraBinding.inflate(layoutInflater)
@@ -57,10 +51,6 @@ class GrabadoraActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { finish() }
 
         binding.navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -251,11 +241,9 @@ class GrabadoraActivity : AppCompatActivity() {
     // Método que se ejecuta cuando la actividad se detiene o sale de la pantalla
     override fun onStop() {
         super.onStop()
-        // Liberamos los recursos del MediaRecorder y el MediaPlayer para evitar fugas de memoria
-        mediaRecorder?.release()
+        mediaRecorder?.release()// Liberamos los recursos del MediaRecorder y el MediaPlayer para evitar fugas de memoria
         mediaPlayer?.release()
     }
-
     // Muestra el cuadro de dialogo con informacion de la aplicacion
     private fun mostrarInformacionApp() {
         val builder = AlertDialog.Builder(this)
@@ -266,7 +254,6 @@ class GrabadoraActivity : AppCompatActivity() {
         }
         builder.create().show()
     }
-
     // Cierra la sesion del usuario
     private fun logout() {
         val builder = AlertDialog.Builder(this)
@@ -282,7 +269,6 @@ class GrabadoraActivity : AppCompatActivity() {
         }
         builder.create().show()
     }
-
     // Muestra el cuadro de dialogo para confirmar la salida de la aplicacion
     private fun mostrarConfirmacionSalida() {
         val builder = AlertDialog.Builder(this)
